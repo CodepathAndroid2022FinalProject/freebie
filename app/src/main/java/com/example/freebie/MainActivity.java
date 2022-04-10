@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        loadSongDatabase();
+
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
@@ -84,5 +86,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) { currentlyPlayingSong = null; }
         });
+    }
+
+    private void loadSongDatabase() {
+        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
+        songDatabase.populateSongListArray();
     }
 }

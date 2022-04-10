@@ -41,8 +41,6 @@ public class HomeFragment extends Fragment {
     private List<Song> allSongs;
     private SongsAdapter adapter;
 
-    private FragmentManager fragmentManager;
-
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -95,108 +93,15 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fragmentManager = getParentFragmentManager();
-
         rvSongs = view.findViewById(R.id.rvSongs);
         progressBar = view.findViewById(R.id.progressBar);
 
-        allSongs = new ArrayList<>();
+        allSongs = Song.songArrayList;
         adapter = new SongsAdapter(getContext(), allSongs);
 
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Refresh song list
-        updateSongsOnSeparateThread();
-    }
-
-    public void updateSongsOnSeparateThread() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                Log.i(TAG, "Loading songs...");
-                ArrayList<Song> songs = updateSongs();
-
-                // Check if fragment is active
-                Fragment fragment = fragmentManager.findFragmentByTag(TAG);
-                if(fragment == null) {
-                    Log.w(TAG, "Breaking out of thread, fragment switched during loading");
-                    return;
-                }
-
-                // Post execution
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        // Remember to CLEAR OUT old items before appending in the new ones
-                        adapter.clear();
-                        allSongs.addAll(songs);
-
-                        // Signal refresh has finished
-                        adapter.notifyDataSetChanged();
-                        // Disable loading bar when ready
-                        progressBar.setVisibility(View.GONE);
-                        Log.i(TAG, "Finished loading songs!");
-                    }
-                });
-            }
-        }).start();
-    }
-
-    public ArrayList<Song> updateSongs() {
-        ArrayList<Song> songs = new ArrayList<>();
-
-        Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Uri filePathUri;
-        String filePath = "Unknown";
-        Cursor songCursor = getContext().getContentResolver().query(songUri, null, null, null, null);
-
-        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
-
-        if(songCursor != null && songCursor.moveToFirst()) {
-            int songTitle = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
-            int songArtist = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int songAlbum = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
-
-            do {
-                // Retrieve song path
-                int column_index = songCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA);
-                filePathUri = Uri.parse(songCursor.getString(column_index));
-                filePath = filePathUri.getPath();
-
-                // Set the working file
-                mediaMetadataRetriever.setDataSource(filePath);
-
-                // Get album art and convert it to a bitmap
-                Bitmap albumBitmap = null;
-                byte[] albumArtData = mediaMetadataRetriever.getEmbeddedPicture();
-
-                if (albumArtData != null) {
-                    albumBitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
-                    albumBitmap = Bitmap.createScaledBitmap(albumBitmap, 128, 128, false);
-                }
-
-                // Retrieve song length
-                String duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                long rawLength = Long.parseLong(duration);
-                String seconds = String.valueOf((rawLength % 60000) / 1000);
-                String minutes = String.valueOf(rawLength / 60000);
-                String length;
-                if(seconds.length() == 1)
-                    length = minutes + ":" + "0" + seconds;
-                else
-                    length = minutes + ":" + seconds;
-
-                String title = songCursor.getString(songTitle);
-                String artist = songCursor.getString(songArtist);
-                String album = songCursor.getString(songAlbum);
-                songs.add(new Song(title, artist, album, length, filePath, albumBitmap));
-            } while (songCursor.moveToNext());
-        }
-        songCursor.close();
-        mediaMetadataRetriever.release();
-
-        return songs;
     }
 }

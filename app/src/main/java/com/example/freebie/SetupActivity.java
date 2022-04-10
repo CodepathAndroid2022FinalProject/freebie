@@ -39,6 +39,7 @@ public class SetupActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(setupActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
                 } else {
                     // Button enters main activity when permissions are granted
+                    loadDBFirstTime();
                     goToMainActivity();
                 }
             }
@@ -55,10 +56,14 @@ public class SetupActivity extends AppCompatActivity {
         }
     }
 
-
     private void goToMainActivity() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
         finish();
+    }
+
+    private void loadDBFirstTime() {
+        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
+        songDatabase.fillDB();
     }
 }

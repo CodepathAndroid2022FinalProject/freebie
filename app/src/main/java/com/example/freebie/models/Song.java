@@ -2,22 +2,25 @@ package com.example.freebie.models;
 
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
+
 public class Song {
 
-    public String title;
-    public String artist;
-    public String album;
-    public String length;
-    public String path;
-    public Bitmap albumArt;
+    public static ArrayList<Song> songArrayList = new ArrayList<>();
 
-    public Song(String title, String artist, String album, String length, String path, Bitmap albumArt){
+    private String title;
+    private String artist;
+    private String album;
+    private String length;
+    private String path;
+    private Bitmap albumArt;
+
+    public Song(String title, String artist, String album, String length, String path){
         this.title = title;
         this.artist = artist;
         this.album = album;
         this.length = length;
         this.path = path;
-        this.albumArt = albumArt;
     }
 
     public String getTitle() { return title; }
@@ -31,4 +34,5 @@ public class Song {
     public String getPath() { return path; }
 
     public Bitmap getAlbumArt() { return albumArt; }
+    public void setAlbumArt(Bitmap albumArt) { this.albumArt = albumArt; }
 }
