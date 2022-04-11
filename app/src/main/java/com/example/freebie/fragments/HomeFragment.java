@@ -1,36 +1,27 @@
 package com.example.freebie.fragments;
 
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
+import static com.example.freebie.MainActivity.mainActivity;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.example.freebie.DBSongQueryListener;
-import com.example.freebie.DiskSongQueryListener;
+import com.example.freebie.GetSongsCompleteListener;
 import com.example.freebie.R;
-import com.example.freebie.SongDatabase;
 import com.example.freebie.SongsAdapter;
 import com.example.freebie.models.Song;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class HomeFragment extends Fragment {
 
@@ -77,24 +68,17 @@ public class HomeFragment extends Fragment {
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(getContext());
-        songDatabase.setDBSongQueryListener(new DBSongQueryListener() {
-            @Override
-            public void onCompletion() {
-                refreshSongs();
-                progressBar.setVisibility(View.GONE);
-            }
-        });
-        songDatabase.fillSongListAsync();
-
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // This needs to refresh the database with new info from disk
-                // but when the time comes, all other fragments must be notified as well
+                mainActivity.getSongsComplete();
+                refreshSongs();
                 swipeContainer.setRefreshing(false);
             }
         });
+
+        refreshSongs();
+        progressBar.setVisibility(View.GONE);
     }
 
     private void refreshSongs() {

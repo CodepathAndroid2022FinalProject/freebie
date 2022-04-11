@@ -41,9 +41,9 @@ public class SetupActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(setupActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
                 } else {
                     // Button enters main activity when permissions are granted
-                    if(startButtonClicked) // Avoid doing multiple song queries
+                    if(startButtonClicked) // Avoid running multiple times
                         return;
-                    loadSongDBFirstTime();
+                    getSongsFromDisk();
                     goToMainActivity();
                     startButtonClicked = true;
                 }
@@ -67,14 +67,25 @@ public class SetupActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadSongDBFirstTime() {
+    public void getSongsFromDisk() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
+        Thread getSongsFromDisk = new Thread(new Runnable() {
             @Override
-            public void onCompletion() {
-                Log.i(TAG, "Disk song query finished!");
+            public void run() {
+                // Work to do
+                Log.i(TAG, "Filling database...");
+                songDatabase.getSongsFromFS();
             }
         });
-        songDatabase.fillDBAsync();
+
+        getSongsFromDisk.start();
+        try {
+            getSongsFromDisk.join();
+        } catch (InterruptedException e) { e.printStackTrace(); }
+        Log.i(TAG, "Filled DB!");
+
+        // Signal that the read is complete
+        Log.i(TAG, "Loading complete!");
     }
+
 }

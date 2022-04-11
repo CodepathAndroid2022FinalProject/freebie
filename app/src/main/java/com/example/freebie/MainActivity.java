@@ -10,6 +10,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.freebie.fragments.AlbumsFragment;
 import com.example.freebie.fragments.ArtistsFragment;
@@ -23,19 +24,22 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
     final FragmentManager fragmentManager = getSupportFragmentManager();
+    public static MainActivity mainActivity;
 
     public static MediaPlayer mediaPlayer;
     public static Song currentlyPlayingSong;
 
-    public Fragment homeFragment;
-    public Fragment albumsFragment;
-    public Fragment artistsFragment;
-    public Fragment settingsFragment;
+    public HomeFragment homeFragment;
+    public AlbumsFragment albumsFragment;
+    public ArtistsFragment artistsFragment;
+    public SettingsFragment settingsFragment;
+    private GetSongsCompleteListener getSongsCompleteListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mainActivity = this;
 
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -51,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 Fragment fragment = null;
                 String fragmentTag = null;
-                // TODO: Find a better way to set tags
                 switch (item.getItemId()) {
                     case R.id.action_home:
                         fragment = homeFragment;
@@ -86,17 +89,54 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) { currentlyPlayingSong = null; }
         });
+
+        getSongsFromDB();
     }
 
-    // Only run when there's a manual check
-    private void loadSongDatabase() {
+    public void getSongsComplete() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
+        new Thread(new Runnable() {
             @Override
-            public void onCompletion() {
-                Log.i(TAG, "Disk song query finished!");
+            public void run() {
+                // Work to do
+                Log.i(TAG, "Filling database...");
+                songDatabase.getSongsFromFS();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i(TAG, "Filled DB!");
+                        getSongsFromDB();
+                    }
+                });
             }
-        });
-        songDatabase.fillDBAsync();
+        }).start();
+
+        // Signal that the read is complete
+        Log.i(TAG, "Loading complete!");
+    }
+
+    public void getSongsFromDB() {
+        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Work to do
+                Log.i(TAG, "Filling song array...");
+                songDatabase.getSongsFromDB();
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Signal that loading is complete
+                        Log.i(TAG, "Filled song array!");
+                    }
+                });
+            }
+        }).start();
+    }
+
+    public void setGetSongsCompleteListener(GetSongsCompleteListener listener) {
+        this.getSongsCompleteListener = listener;
     }
 }

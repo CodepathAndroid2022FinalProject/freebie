@@ -5,20 +5,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
-
-import androidx.fragment.app.Fragment;
 
 import com.example.freebie.models.Song;
-
-import java.io.File;
-import java.util.ArrayList;
 
 public class SongDatabase extends SQLiteOpenHelper {
 
@@ -37,9 +29,6 @@ public class SongDatabase extends SQLiteOpenHelper {
     private static final String ALBUM_FIELD = "album";
     private static final String LENGTH_FIELD = "length";
     private static final String PATH_FIELD = "path";
-
-    private DiskSongQueryListener diskListener;
-    private DBSongQueryListener dbListener;
 
     public SongDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -81,27 +70,7 @@ public class SongDatabase extends SQLiteOpenHelper {
         // app versions for whatever reason
     }
 
-    public void fillSongListAsync() {
-        Thread tFillDatabase = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                Log.i(TAG, "Filling database...");
-                populateSongListArray();
-            }
-        });
-
-        tFillDatabase.start();
-        try {
-            tFillDatabase.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Log.i(TAG, "Database filled!");
-        dbListener.onCompletion();
-    }
-
-    public void populateSongListArray() {
+    public void getSongsFromDB() {
         Song.songArrayList.clear();
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         try (Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
@@ -122,26 +91,12 @@ public class SongDatabase extends SQLiteOpenHelper {
         }
     }
 
-    public void fillDBAsync() {
-        Thread tFillDatabase = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                Log.i(TAG, "Filling database...");
-                getSongsFromFS();
-            }
-        });
-
-        tFillDatabase.start();
-        try {
-            tFillDatabase.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        diskListener.onCompletion();
-    }
-
     public void getSongsFromFS() {
+        // TODO: Remove temporary clear for a better replace option
+        SQLiteDatabase oldDB = this.getWritableDatabase();
+        Cursor cursor = oldDB.rawQuery("DELETE FROM " + TABLE_NAME, null);
+        while(cursor.moveToNext()) {} // Literally just deletes everything
+
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Uri filePathUri;
         String filePath = "Unknown";
@@ -196,23 +151,10 @@ public class SongDatabase extends SQLiteOpenHelper {
                 contentValues.put(LENGTH_FIELD, length);
                 contentValues.put(PATH_FIELD, filePath);
 
-                // TODO: Find way to avoid duplicates on reload
                 sqLiteDatabase.insert(TABLE_NAME, null, contentValues);
-
-                Log.i(TAG, "Song - " + title + " - has just been added");
             } while (songCursor.moveToNext());
         }
         songCursor.close();
         mediaMetadataRetriever.release();
-
-        Log.i(TAG, "Database filled!");
-    }
-
-    public void setDiskSongQueryListener(DiskSongQueryListener listener) {
-        this.diskListener = listener;
-    }
-
-    public void setDBSongQueryListener(DBSongQueryListener listener) {
-        this.dbListener = listener;
     }
 }
