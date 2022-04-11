@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.ProgressBar;
 
 import com.example.freebie.GetSongsCompleteListener;
 import com.example.freebie.R;
+import com.example.freebie.SongDatabase;
 import com.example.freebie.SongsAdapter;
 import com.example.freebie.models.Song;
 
@@ -68,12 +70,25 @@ public class HomeFragment extends Fragment {
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // Force refresh songs found on disk
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mainActivity.getSongsComplete();
-                refreshSongs();
-                swipeContainer.setRefreshing(false);
+                SongDatabase songDatabase = SongDatabase.instanceOfDataBase(getContext());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        songDatabase.getSongsFromFS();
+                        songDatabase.getSongsFromDB();
+                        mainActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshSongs();
+                                swipeContainer.setRefreshing(false);
+                            }
+                        });
+                    }
+                }).start();
             }
         });
 
