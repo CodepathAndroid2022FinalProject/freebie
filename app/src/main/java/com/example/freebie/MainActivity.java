@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.freebie.fragments.AlbumsFragment;
@@ -20,6 +22,7 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
+    public static Activity mainActivity;
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
     public static MediaPlayer mediaPlayer;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        loadSongDatabase();
+        mainActivity = this;
 
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
@@ -88,8 +91,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // Only run when there's a manual check
     private void loadSongDatabase() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        songDatabase.populateSongListArray();
+        songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
+            @Override
+            public void onCompletion() {
+                Log.i(TAG, "Disk scan completed");
+            }
+        });
+        songDatabase.fillDBAsync();
     }
 }

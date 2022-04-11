@@ -21,7 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import com.example.freebie.DBSongQueryListener;
+import com.example.freebie.DiskSongQueryListener;
 import com.example.freebie.R;
+import com.example.freebie.SongDatabase;
 import com.example.freebie.SongsAdapter;
 import com.example.freebie.models.Song;
 
@@ -38,7 +41,7 @@ public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
     private RecyclerView rvSongs;
     private ProgressBar progressBar;
-    private List<Song> allSongs;
+    private ArrayList<Song> allSongs = new ArrayList<>();
     private SongsAdapter adapter;
 
 
@@ -96,12 +99,32 @@ public class HomeFragment extends Fragment {
         rvSongs = view.findViewById(R.id.rvSongs);
         progressBar = view.findViewById(R.id.progressBar);
 
-        allSongs = Song.songArrayList;
         adapter = new SongsAdapter(getContext(), allSongs);
 
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Refresh song list
+        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(getContext());
+        songDatabase.setDBSongQueryListener(new DBSongQueryListener() {
+            @Override
+            public void onCompletion() {
+                refreshSongs();
+            }
+        });
+        songDatabase.fillSongListAsync();
+
+        // Build song list
+        refreshSongs();
+    }
+
+    private void refreshSongs() {
+        // Remember to CLEAR OUT old items before appending in the new ones
+        adapter.clear();
+        allSongs.addAll(Song.songArrayList);
+
+        // Signal refresh has finished
+        adapter.notifyDataSetChanged();
+        // Disable loading bar when ready
+        progressBar.setVisibility(View.GONE);
     }
 }

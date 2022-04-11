@@ -24,14 +24,15 @@ import com.example.freebie.models.Song;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> {
 
     private Context context;
-    private List<Song> songs;
+    private ArrayList<Song> songs;
 
-    public SongsAdapter(Context context, List<Song> songs) {
+    public SongsAdapter(Context context, ArrayList<Song> songs) {
         this.context = context;
         this.songs = songs;
     }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 public class SetupActivity extends AppCompatActivity {
 
+    public static final String TAG = "SetupActivity";
     public static final int READ_EXTERNAL_STORAGE_PERMISSION_REQUEST = 42;
 
     private Button btnPermission;
@@ -39,7 +40,7 @@ public class SetupActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(setupActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
                 } else {
                     // Button enters main activity when permissions are granted
-                    loadDBFirstTime();
+                    loadSongDBFirstTime();
                     goToMainActivity();
                 }
             }
@@ -62,8 +63,14 @@ public class SetupActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadDBFirstTime() {
+    private void loadSongDBFirstTime() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        songDatabase.fillDB();
+        songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
+            @Override
+            public void onCompletion() {
+                Log.i(TAG, "Disk scan completed");
+            }
+        });
+        songDatabase.fillDBAsync();
     }
 }
