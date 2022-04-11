@@ -97,6 +97,7 @@ public class SongDatabase extends SQLiteOpenHelper {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        Log.i(TAG, "Database filled!");
         dbListener.onCompletion();
     }
 

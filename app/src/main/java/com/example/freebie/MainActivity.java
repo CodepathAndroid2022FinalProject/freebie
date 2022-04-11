@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
             @Override
             public void onCompletion() {
-                Log.i(TAG, "Disk scan completed");
+                Log.i(TAG, "Disk song query finished!");
             }
         });
         songDatabase.fillDBAsync();

@@ -20,6 +20,7 @@ public class SetupActivity extends AppCompatActivity {
     public static final int READ_EXTERNAL_STORAGE_PERMISSION_REQUEST = 42;
 
     private Button btnPermission;
+    private boolean startButtonClicked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,11 @@ public class SetupActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(setupActivity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_EXTERNAL_STORAGE_PERMISSION_REQUEST);
                 } else {
                     // Button enters main activity when permissions are granted
+                    if(startButtonClicked) // Avoid doing multiple song queries
+                        return;
                     loadSongDBFirstTime();
                     goToMainActivity();
+                    startButtonClicked = true;
                 }
             }
         });
@@ -68,7 +72,7 @@ public class SetupActivity extends AppCompatActivity {
         songDatabase.setDiskSongQueryListener(new DiskSongQueryListener() {
             @Override
             public void onCompletion() {
-                Log.i(TAG, "Disk scan completed");
+                Log.i(TAG, "Disk song query finished!");
             }
         });
         songDatabase.fillDBAsync();
