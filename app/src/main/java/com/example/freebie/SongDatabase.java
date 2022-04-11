@@ -1,7 +1,5 @@
 package com.example.freebie;
 
-import static com.example.freebie.MainActivity.mainActivity;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
