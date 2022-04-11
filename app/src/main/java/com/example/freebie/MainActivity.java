@@ -22,7 +22,6 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
-    public static Activity mainActivity;
     final FragmentManager fragmentManager = getSupportFragmentManager();
 
     public static MediaPlayer mediaPlayer;
@@ -37,8 +36,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mainActivity = this;
 
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);

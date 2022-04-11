@@ -84,21 +84,22 @@ public class SongDatabase extends SQLiteOpenHelper {
     }
 
     public void fillSongListAsync() {
-        new Thread(new Runnable() {
+        Thread tFillDatabase = new Thread(new Runnable() {
             @Override
             public void run() {
                 // Work to do
                 Log.i(TAG, "Filling database...");
                 populateSongListArray();
-
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dbListener.onCompletion();
-                    }
-                });
             }
-        }).start();
+        });
+
+        tFillDatabase.start();
+        try {
+            tFillDatabase.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        dbListener.onCompletion();
     }
 
     public void populateSongListArray() {
@@ -123,21 +124,22 @@ public class SongDatabase extends SQLiteOpenHelper {
     }
 
     public void fillDBAsync() {
-        new Thread(new Runnable() {
+        Thread tFillDatabase = new Thread(new Runnable() {
             @Override
             public void run() {
                 // Work to do
                 Log.i(TAG, "Filling database...");
                 getSongsFromFS();
-
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        diskListener.onCompletion();
-                    }
-                });
             }
-        }).start();
+        });
+
+        tFillDatabase.start();
+        try {
+            tFillDatabase.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        diskListener.onCompletion();
     }
 
     public void getSongsFromFS() {
