@@ -1,12 +1,11 @@
 package com.example.freebie.fragments;
 
-import static com.example.freebie.MainActivity.mainActivity;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import com.example.freebie.GetSongsCompleteListener;
 import com.example.freebie.R;
 import com.example.freebie.SongDatabase;
 import com.example.freebie.SongsAdapter;
@@ -31,8 +29,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView rvSongs;
     private ProgressBar progressBar;
     private SwipeRefreshLayout swipeContainer;
-    private ArrayList<Song> allSongs = new ArrayList<>();
+    private ArrayList<Song> allSongs;
     private SongsAdapter adapter;
+
+    private FragmentManager fragmentManager;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -61,10 +61,13 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        fragmentManager = getParentFragmentManager();
+
         rvSongs = view.findViewById(R.id.rvSongs);
         progressBar = view.findViewById(R.id.progressBar);
         swipeContainer = view.findViewById(R.id.swipeContainer);
 
+        allSongs = new ArrayList<>();
         adapter = new SongsAdapter(getContext(), allSongs);
 
         rvSongs.setAdapter(adapter);
@@ -80,7 +83,15 @@ public class HomeFragment extends Fragment {
                     public void run() {
                         songDatabase.getSongsFromFS();
                         songDatabase.getSongsFromDB();
-                        mainActivity.runOnUiThread(new Runnable() {
+
+                        // Avoid crash if changing tab while refreshing
+                        Fragment fragment = fragmentManager.findFragmentByTag(TAG);
+                        if(fragment == null) {
+                            Log.w(TAG, "Breaking out of thread, fragment switched during loading");
+                            return;
+                        }
+
+                        getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 refreshSongs();
@@ -91,15 +102,13 @@ public class HomeFragment extends Fragment {
                 }).start();
             }
         });
-
         refreshSongs();
-        progressBar.setVisibility(View.GONE);
     }
 
     private void refreshSongs() {
         // Remember to CLEAR OUT old items before appending in the new ones
         adapter.clear();
-        allSongs.addAll(Song.songArrayList);
+        adapter.addAll(Song.songArrayList);
 
         // Signal refresh has finished
         adapter.notifyDataSetChanged();
