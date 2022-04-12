@@ -15,12 +15,13 @@ public class Song {
     private String path;
     private Bitmap albumArt;
 
-    public Song(String title, String artist, String album, String length, String path){
+    public Song(String title, String artist, String album, String length, String path, Bitmap albumArt){
         this.title = title;
         this.artist = artist;
         this.album = album;
         this.length = length;
         this.path = path;
+        this.albumArt = albumArt;
     }
 
     public String getTitle() { return title; }

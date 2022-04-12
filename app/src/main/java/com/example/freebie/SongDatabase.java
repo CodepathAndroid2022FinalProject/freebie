@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -72,6 +74,7 @@ public class SongDatabase extends SQLiteOpenHelper {
 
     public void getSongsFromDB() {
         Song.songArrayList.clear();
+        MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
         SQLiteDatabase sqLiteDatabase = this.getReadableDatabase();
         try (Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + TABLE_NAME, null)) {
             if(cursor.getCount() != 0) {
@@ -83,12 +86,24 @@ public class SongDatabase extends SQLiteOpenHelper {
                     String length = cursor.getString(4);
                     String path = cursor.getString(5);
 
+                    // Get album art and convert it to a bitmap
+                    mediaMetadataRetriever.setDataSource(path);
+
+                    Bitmap albumBitmap = null;
+                    byte[] albumArtData = mediaMetadataRetriever.getEmbeddedPicture();
+
+                    if (albumArtData != null) {
+                        albumBitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
+                        albumBitmap = Bitmap.createScaledBitmap(albumBitmap, 128, 128, false);
+                    }
+
                     // Create song model and add to static array
-                    Song song = new Song(title, artist, album, length, path);
+                    Song song = new Song(title, artist, album, length, path, albumBitmap);
                     Song.songArrayList.add(song);
                 }
             }
         }
+        mediaMetadataRetriever.close();
     }
 
     public void getSongsFromFS() {
@@ -117,15 +132,6 @@ public class SongDatabase extends SQLiteOpenHelper {
 
                 // Set the working file
                 mediaMetadataRetriever.setDataSource(filePath);
-
-//                // Get album art and convert it to a bitmap
-//                Bitmap albumBitmap = null;
-//                byte[] albumArtData = mediaMetadataRetriever.getEmbeddedPicture();
-//
-//                if (albumArtData != null) {
-//                    albumBitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
-//                    albumBitmap = Bitmap.createScaledBitmap(albumBitmap, 128, 128, false);
-//                }
 
                 // Retrieve title, artist, and album
                 String title = songCursor.getString(songTitleIndex);

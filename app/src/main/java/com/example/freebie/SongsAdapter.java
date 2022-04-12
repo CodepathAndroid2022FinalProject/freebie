@@ -1,11 +1,16 @@
 package com.example.freebie;
 
 import static com.example.freebie.MainActivity.currentlyPlayingSong;
+import static com.example.freebie.MainActivity.mainActivity;
 import static com.example.freebie.MainActivity.mediaPlayer;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.MediaMetadataRetriever;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> {
+
+    public static final String TAG = "SongsAdapter";
 
     private Context context;
     private ArrayList<Song> songs;
@@ -111,12 +118,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     // Clean all elements of the recycler
     public void clear() {
         songs.clear();
-        notifyDataSetChanged();
     }
 
     // Add a list of items -- change to type used
     public void addAll(List<Song> songs) {
         this.songs.addAll(songs);
-        notifyDataSetChanged();
     }
 }
