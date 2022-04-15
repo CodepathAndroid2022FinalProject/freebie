@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     public AlbumsFragment albumsFragment;
     public ArtistsFragment artistsFragment;
     public SettingsFragment settingsFragment;
-    private GetSongsCompleteListener getSongsCompleteListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,10 +88,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) { currentlyPlayingSong = null; }
         });
-
-        getSongsFromDB();
     }
 
+    // TODO: Use listeners
     public void getSongsComplete() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
         new Thread(new Runnable() {
@@ -101,14 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 // Work to do
                 Log.i(TAG, "Filling database...");
                 songDatabase.getSongsFromFS();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.i(TAG, "Filled DB!");
-                        getSongsFromDB();
-                    }
-                });
+                songDatabase.getSongsFromDB();
             }
         }).start();
 
@@ -122,21 +113,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // Work to do
-                Log.i(TAG, "Filling song array...");
                 songDatabase.getSongsFromDB();
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        // Signal that loading is complete
-                        Log.i(TAG, "Filled song array!");
+                        homeFragment.refreshSongs();
                     }
                 });
             }
         }).start();
-    }
-
-    public void setGetSongsCompleteListener(GetSongsCompleteListener listener) {
-        this.getSongsCompleteListener = listener;
     }
 }

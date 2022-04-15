@@ -1,5 +1,7 @@
 package com.example.freebie.fragments;
 
+import static com.example.freebie.MainActivity.mainActivity;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -105,7 +109,7 @@ public class HomeFragment extends Fragment {
         refreshSongs();
     }
 
-    private void refreshSongs() {
+    public void refreshSongs() {
         // Remember to CLEAR OUT old items before appending in the new ones
         adapter.clear();
         adapter.addAll(Song.songArrayList);

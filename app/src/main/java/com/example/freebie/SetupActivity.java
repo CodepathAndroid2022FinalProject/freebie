@@ -1,5 +1,7 @@
 package com.example.freebie;
 
+import static com.example.freebie.MainActivity.mainActivity;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -69,23 +71,22 @@ public class SetupActivity extends AppCompatActivity {
 
     public void getSongsFromDisk() {
         SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        Thread getSongsFromDisk = new Thread(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 // Work to do
                 Log.i(TAG, "Filling database...");
                 songDatabase.getSongsFromFS();
+                Log.i(TAG, "Loading complete!");
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mainActivity.getSongsFromDB();
+                    }
+                });
             }
-        });
-
-        getSongsFromDisk.start();
-        try {
-            getSongsFromDisk.join();
-        } catch (InterruptedException e) { e.printStackTrace(); }
-        Log.i(TAG, "Filled DB!");
-
-        // Signal that the read is complete
-        Log.i(TAG, "Loading complete!");
+        }).start();
     }
 
 }
