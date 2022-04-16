@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment {
         Thread RefreshingHomeFragment = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(songRetrievalService.loadingSongs) {
+                while(SongRetrievalService.loadingSongs) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -142,6 +142,7 @@ public class HomeFragment extends Fragment {
                     }
                 }
                 Log.i(TAG, "Finished loading list!");
+                progressBar.setVisibility(View.GONE);
             }
         });
         RefreshingHomeFragment.start();
