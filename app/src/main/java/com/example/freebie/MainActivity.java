@@ -40,6 +40,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mainActivity = this;
 
+        Thread GettingSongsFromDisk = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getApplicationContext());
+                songRetrievalService.getSongs();
+            }
+        });
+        GettingSongsFromDisk.start();
+
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 

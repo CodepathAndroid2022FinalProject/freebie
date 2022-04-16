@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.example.freebie.models.Song;
 
@@ -22,11 +23,9 @@ public class SongRetrievalService {
     public static SongRetrievalService songRetrievalService;
     private static Context context;
 
-    public boolean loadingSongs = false;
+    public static boolean loadingSongs = false;
 
-    public SongRetrievalService(Context context) {
-        this.context = context;
-    }
+    public SongRetrievalService(Context context) { SongRetrievalService.context = context; }
 
     public static SongRetrievalService getInstance(Context context) {
         SongRetrievalService.context = context;
@@ -35,9 +34,8 @@ public class SongRetrievalService {
         return songRetrievalService;
     }
 
-    public void getSongs(SongsAdapter adapter) {
-        loadingSongs = false;
-        adapter.clear();
+    public void getSongs() {
+        loadingSongs = true;
         Song.songArrayList.clear();
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Uri filePathUri;
@@ -88,19 +86,11 @@ public class SongRetrievalService {
                 // Create song model and add to static array
                 Song song = new Song(title, artist, album, length, filePath, albumBitmap);
                 Song.songArrayList.add(song);
-
-                adapter.add(song);
-                mainActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyItemInserted(Song.songArrayList.size());
-                    }
-                });
-
             } while (songCursor.moveToNext());
         }
+        Log.i(TAG, "Parsing for songs finished with " + Song.songArrayList.size() + " total songs!");
         songCursor.close();
         mediaMetadataRetriever.release();
-        loadingSongs = true;
+        loadingSongs = false;
     }
 }

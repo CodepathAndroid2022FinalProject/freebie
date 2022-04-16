@@ -1,5 +1,7 @@
 package com.example.freebie.fragments;
 
+import static com.example.freebie.MainActivity.mainActivity;
+
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -73,44 +75,75 @@ public class HomeFragment extends Fragment {
         rvSongs.setAdapter(adapter);
         rvSongs.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        progressBar.setVisibility(View.VISIBLE);
+
         // Force refresh songs found on disk
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getContext());
-                new Thread(new Runnable() {
+                // Don't start refreshing songs again while a refresh is already happening
+                if(SongRetrievalService.loadingSongs) {
+                    swipeContainer.setRefreshing(false);
+                    return;
+                }
+
+                Thread GettingSongsFromDisk = new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        songRetrievalService.getSongs(adapter);
-
-                        // Avoid crash if changing tab while refreshing
-                        Fragment fragment = fragmentManager.findFragmentByTag(TAG);
-                        if(fragment == null) {
-                            Log.w(TAG, "Breaking out of thread, fragment switched during loading");
-                            return;
-                        }
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                swipeContainer.setRefreshing(false);
-                            }
-                        });
+                        SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getContext());
+                        songRetrievalService.getSongs();
                     }
-                }).start();
+                });
+                GettingSongsFromDisk.start();
+                refreshSongs();
+                swipeContainer.setRefreshing(false);
             }
         });
         refreshSongs();
     }
 
     public void refreshSongs() {
+        Log.i(TAG, "Rebuilding list!");
         // Remember to CLEAR OUT old items before appending in the new ones
         adapter.clear();
-        adapter.addAll(Song.songArrayList);
+        SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getContext());
+        Thread RefreshingHomeFragment = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(songRetrievalService.loadingSongs) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-        // Signal refresh has finished
-        adapter.notifyDataSetChanged();
-        // Disable loading bar when ready
-        progressBar.setVisibility(View.GONE);
+                    // Avoid crash if changing tab while refreshing
+                    Fragment fragment = fragmentManager.findFragmentByTag(TAG);
+                    if(fragment == null) {
+                        Log.w(TAG, "Breaking out of thread, fragment switched during loading");
+                        return;
+                    }
+
+                    int startSize = adapter.songs.size();
+                    int endSize = Song.songArrayList.size();
+                    if(startSize < endSize) {
+                        for (int i = startSize; i < endSize; i++)
+                            adapter.add(Song.songArrayList.get(i));
+
+                        mainActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int i = startSize; i < endSize; i++)
+                                    adapter.notifyItemInserted(i);
+                                if(adapter.songs.size() > 0 && progressBar.getVisibility() == View.VISIBLE)
+                                    progressBar.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+                }
+                Log.i(TAG, "Finished loading list!");
+            }
+        });
+        RefreshingHomeFragment.start();
     }
 }
