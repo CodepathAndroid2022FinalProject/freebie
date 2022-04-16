@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
-        getSongsFromDisk();
-        Log.i(TAG, "Reloaded songs from disk!");
-
         // Create each fragment in advance
         homeFragment = new HomeFragment();
         albumsFragment = new AlbumsFragment();
@@ -91,10 +88,5 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) { currentlyPlayingSong = null; }
         });
-    }
-
-    private void getSongsFromDisk() {
-        SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getApplicationContext());
-        songRetrievalService.getSongs();
     }
 }

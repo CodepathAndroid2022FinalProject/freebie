@@ -1,5 +1,7 @@
 package com.example.freebie;
 
+import static com.example.freebie.MainActivity.mainActivity;
+
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -20,6 +22,8 @@ public class SongRetrievalService {
     public static SongRetrievalService songRetrievalService;
     private static Context context;
 
+    public boolean loadingSongs = false;
+
     public SongRetrievalService(Context context) {
         this.context = context;
     }
@@ -31,7 +35,9 @@ public class SongRetrievalService {
         return songRetrievalService;
     }
 
-    public void getSongs() {
+    public void getSongs(SongsAdapter adapter) {
+        loadingSongs = false;
+        adapter.clear();
         Song.songArrayList.clear();
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Uri filePathUri;
@@ -83,9 +89,18 @@ public class SongRetrievalService {
                 Song song = new Song(title, artist, album, length, filePath, albumBitmap);
                 Song.songArrayList.add(song);
 
+                adapter.add(song);
+                mainActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyItemInserted(Song.songArrayList.size());
+                    }
+                });
+
             } while (songCursor.moveToNext());
         }
         songCursor.close();
         mediaMetadataRetriever.release();
+        loadingSongs = true;
     }
 }

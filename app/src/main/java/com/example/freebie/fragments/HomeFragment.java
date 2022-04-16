@@ -81,11 +81,18 @@ public class HomeFragment extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        songRetrievalService.getSongs();
+                        songRetrievalService.getSongs(adapter);
+
+                        // Avoid crash if changing tab while refreshing
+                        Fragment fragment = fragmentManager.findFragmentByTag(TAG);
+                        if(fragment == null) {
+                            Log.w(TAG, "Breaking out of thread, fragment switched during loading");
+                            return;
+                        }
+
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                refreshSongs();
                                 swipeContainer.setRefreshing(false);
                             }
                         });
