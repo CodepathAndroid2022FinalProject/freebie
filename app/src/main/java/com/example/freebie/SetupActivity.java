@@ -45,7 +45,6 @@ public class SetupActivity extends AppCompatActivity {
                     // Button enters main activity when permissions are granted
                     if(startButtonClicked) // Avoid running multiple times
                         return;
-                    getSongsFromDisk();
                     goToMainActivity();
                     startButtonClicked = true;
                 }
@@ -68,25 +67,4 @@ public class SetupActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
-
-    public void getSongsFromDisk() {
-        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                Log.i(TAG, "Filling database...");
-                songDatabase.getSongsFromFS();
-                Log.i(TAG, "Loading complete!");
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mainActivity.getSongsFromDB();
-                    }
-                });
-            }
-        }).start();
-    }
-
 }

@@ -43,6 +43,9 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
+        getSongsFromDisk();
+        Log.i(TAG, "Reloaded songs from disk!");
+
         // Create each fragment in advance
         homeFragment = new HomeFragment();
         albumsFragment = new AlbumsFragment();
@@ -90,38 +93,8 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // TODO: Use listeners
-    public void getSongsComplete() {
-        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                Log.i(TAG, "Filling database...");
-                songDatabase.getSongsFromFS();
-                songDatabase.getSongsFromDB();
-            }
-        }).start();
-
-        // Signal that the read is complete
-        Log.i(TAG, "Loading complete!");
-    }
-
-    public void getSongsFromDB() {
-        SongDatabase songDatabase = SongDatabase.instanceOfDataBase(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Work to do
-                songDatabase.getSongsFromDB();
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        homeFragment.refreshSongs();
-                    }
-                });
-            }
-        }).start();
+    private void getSongsFromDisk() {
+        SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getApplicationContext());
+        songRetrievalService.getSongs();
     }
 }

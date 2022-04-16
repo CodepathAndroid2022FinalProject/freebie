@@ -1,7 +1,5 @@
 package com.example.freebie.fragments;
 
-import static com.example.freebie.MainActivity.mainActivity;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,8 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.example.freebie.R;
-import com.example.freebie.SongDatabase;
+import com.example.freebie.SongRetrievalService;
 import com.example.freebie.SongsAdapter;
 import com.example.freebie.models.Song;
 
@@ -81,20 +77,11 @@ public class HomeFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                SongDatabase songDatabase = SongDatabase.instanceOfDataBase(getContext());
+                SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getContext());
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        songDatabase.getSongsFromFS();
-                        songDatabase.getSongsFromDB();
-
-                        // Avoid crash if changing tab while refreshing
-                        Fragment fragment = fragmentManager.findFragmentByTag(TAG);
-                        if(fragment == null) {
-                            Log.w(TAG, "Breaking out of thread, fragment switched during loading");
-                            return;
-                        }
-
+                        songRetrievalService.getSongs();
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

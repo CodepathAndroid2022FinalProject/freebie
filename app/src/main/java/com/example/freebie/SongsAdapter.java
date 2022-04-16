@@ -37,7 +37,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     public static final String TAG = "SongsAdapter";
 
     private Context context;
-    private ArrayList<Song> songs;
+    public ArrayList<Song> songs;
 
     public SongsAdapter(Context context, ArrayList<Song> songs) {
         this.context = context;
@@ -120,4 +120,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
 
     // Add a list of items -- change to type used
     public void addAll(List<Song> songs) { this.songs.addAll(songs); }
+
+    public void add(Song song) { this.songs.add(song); }
 }
