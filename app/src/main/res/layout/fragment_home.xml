@@ -16,17 +16,12 @@
         android:indeterminate="true"
         android:visibility="visible" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSongs"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSongs"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </FrameLayout>

@@ -116,10 +116,18 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
         }
     }
     // Clean all elements of the recycler
-    public void clear() { songs.clear(); }
+    public void clear() {
+        this.songs.clear();
+        notifyDataSetChanged();
+    }
 
     // Add a list of items -- change to type used
-    public void addAll(List<Song> songs) { this.songs.addAll(songs); }
+    public void addAll(List<Song> songs) {
+        this.songs.addAll(songs);
+        notifyDataSetChanged();
+    }
 
-    public void add(Song song) { this.songs.add(song); }
+    public void add(Song song) {
+        this.songs.add(song);
+    }
 }
