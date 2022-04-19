@@ -42,7 +42,7 @@ public class AlbumsAdapter extends RecyclerView.Adapter<AlbumsAdapter.ViewHolder
         this.albums = albums;
 
         requestOptions = new RequestOptions();
-        requestOptions.transform(new CenterCrop(), new RoundedCorners(64));
+        requestOptions.transform(new CenterCrop(), new RoundedCorners(32));
 
         Resources res = context.getResources();
         placeholderFigure = ResourcesCompat.getDrawable(res, android.R.drawable.ic_menu_gallery, null);

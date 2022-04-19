@@ -22,12 +22,14 @@
         android:id="@+id/tvAlbumTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:lines="1"
         android:maxWidth="128dp"
         android:maxLines="2"
         android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title"
+        android:textSize="16sp"
         tools:text="Album Name" />
 
     <TextView
