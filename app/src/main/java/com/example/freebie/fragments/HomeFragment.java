@@ -7,10 +7,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +18,10 @@ import android.widget.ProgressBar;
 
 import com.example.freebie.R;
 import com.example.freebie.SongRetrievalService;
-import com.example.freebie.SongsAdapter;
+import com.example.freebie.adapter.SongsAdapter;
 import com.example.freebie.models.Song;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 
 public class HomeFragment extends Fragment {
 

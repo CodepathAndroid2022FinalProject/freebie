@@ -8,22 +8,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ProgressBar;
 
-import com.example.freebie.AlbumsAdapter;
+import com.example.freebie.adapter.AlbumsAdapter;
 import com.example.freebie.R;
 import com.example.freebie.SongRetrievalService;
-import com.example.freebie.SongsAdapter;
 import com.example.freebie.models.Album;
-import com.example.freebie.models.Song;
 
 import java.util.ArrayList;
 

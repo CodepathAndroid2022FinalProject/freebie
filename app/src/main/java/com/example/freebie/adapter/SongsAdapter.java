@@ -1,4 +1,4 @@
-package com.example.freebie;
+package com.example.freebie.adapter;
 
 import static com.example.freebie.MainActivity.currentlyPlayingSong;
 import static com.example.freebie.MainActivity.mediaPlayer;
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.freebie.R;
 import com.example.freebie.models.Song;
 
 import org.jetbrains.annotations.NotNull;
