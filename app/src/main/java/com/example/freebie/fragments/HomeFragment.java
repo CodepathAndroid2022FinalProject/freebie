@@ -29,14 +29,11 @@ import java.util.ConcurrentModificationException;
 public class HomeFragment extends Fragment {
 
     public static final String TAG = "HomeFragment";
+
     private RecyclerView rvSongs;
     private ProgressBar progressBar;
     private ArrayList<Song> allSongs;
     private SongsAdapter adapter;
-
-    private FragmentManager fragmentManager;
-
-    public static boolean listLoading;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -58,8 +55,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        fragmentManager = getParentFragmentManager();
-
         rvSongs = view.findViewById(R.id.rvSongs);
         progressBar = view.findViewById(R.id.progressBar);
 
@@ -78,7 +73,6 @@ public class HomeFragment extends Fragment {
         Log.i(TAG, "Rebuilding list!");
         // Remember to CLEAR OUT old items before appending in the new ones
         adapter.clear();
-        SongRetrievalService songRetrievalService = SongRetrievalService.getInstance(getContext());
 
         Thread RefreshingHomeFragment = new Thread(new Runnable() {
             @Override
@@ -89,7 +83,7 @@ public class HomeFragment extends Fragment {
                 // forcefully delay the loading of the song list to hold back some processing.
                 // If anyone has a better way of doing this, I would be incredibly grateful.
                 try {
-                    Thread.sleep(125);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -103,40 +97,23 @@ public class HomeFragment extends Fragment {
                     return;
 
                 while(SongRetrievalService.loadingSongs) {
-                    // Avoid crash if changing tab while refreshing
-                    Fragment fragment;
-                    try {
-                        fragment = fragmentManager.findFragmentByTag(TAG);
-                    } catch (ConcurrentModificationException e) {
-                        Log.w(TAG, "Breaking out of thread,"
-                                + " FragmentManager was checked by two threads at once");
-                        return;
+                    int startSize = adapter.songs.size();
+                    int endSize = Song.songArrayList.size();
+                    if(startSize < endSize) {
+                        mainActivity.runOnUiThread(() -> {
+                            for (int i = adapter.songs.size(); i < Song.songArrayList.size(); i++) {
+                                adapter.add(Song.songArrayList.get(i));
+                                adapter.notifyItemInserted(i);
+                            }
+                            if (adapter.songs.size() > 0 && progressBar.getVisibility() == View.VISIBLE)
+                                progressBar.setVisibility(View.GONE);
+                        });
                     }
-                    if(fragment == null) {
-                        Log.w(TAG, "Breaking out of thread, fragment switched during loading");
-                        return;
-                    }
-                    loadRemainingSongs();
                 }
                 mainActivity.runOnUiThread(() -> progressBar.setVisibility(View.GONE));
                 Log.i(TAG, "Finished loading list with " + adapter.songs.size() + " songs!");
             }
         });
         RefreshingHomeFragment.start();
-    }
-
-    private void loadRemainingSongs() {
-        int startSize = adapter.songs.size();
-        int endSize = Song.songArrayList.size();
-        if(startSize < endSize) {
-            mainActivity.runOnUiThread(() -> {
-                for (int i = adapter.songs.size(); i < Song.songArrayList.size(); i++) {
-                    adapter.add(Song.songArrayList.get(i));
-                    adapter.notifyItemInserted(i);
-                }
-                if (adapter.songs.size() > 0 && progressBar.getVisibility() == View.VISIBLE)
-                    progressBar.setVisibility(View.GONE);
-            });
-        }
     }
 }

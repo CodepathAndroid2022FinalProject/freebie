@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.example.freebie.models.Album;
 import com.example.freebie.models.Song;
 
 public class SongRetrievalService {
@@ -38,6 +39,7 @@ public class SongRetrievalService {
         Log.i(TAG, "Getting songs from disk!");
         loadingSongs = true;
         Song.songArrayList.clear();
+        Album.albumArrayList.clear();
         Uri songUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Uri filePathUri;
         String filePath = "Unknown";
@@ -45,7 +47,7 @@ public class SongRetrievalService {
 
         MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever();
 
-        if(songCursor != null && songCursor.moveToFirst()) {
+        if (songCursor != null && songCursor.moveToFirst()) {
             int songTitleIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtistIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int songAlbumIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
@@ -60,9 +62,9 @@ public class SongRetrievalService {
                 mediaMetadataRetriever.setDataSource(filePath);
 
                 // Retrieve title, artist, and album
-                String title = songCursor.getString(songTitleIndex);
-                String artist = songCursor.getString(songArtistIndex);
-                String album = songCursor.getString(songAlbumIndex);
+                String titleString = songCursor.getString(songTitleIndex);
+                String artistString = songCursor.getString(songArtistIndex);
+                String albumString = songCursor.getString(songAlbumIndex);
 
                 // Retrieve song length
                 String duration = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
@@ -70,24 +72,38 @@ public class SongRetrievalService {
                 String seconds = String.valueOf((rawLength % 60000) / 1000);
                 String minutes = String.valueOf(rawLength / 60000);
                 String length;
-                if(seconds.length() == 1)
+                if (seconds.length() == 1)
                     length = minutes + ":" + "0" + seconds;
                 else
                     length = minutes + ":" + seconds;
 
-                // Retrieve album art
-                Bitmap albumBitmap = null;
+                // Retrieve low res album art
+                Bitmap lowResAlbumBitmap = null;
+                Bitmap highResAlbumBitmap = null;
                 byte[] albumArtData = mediaMetadataRetriever.getEmbeddedPicture();
 
                 if (albumArtData != null) {
-                    albumBitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
-                    albumBitmap = Bitmap.createScaledBitmap(albumBitmap, 128, 128, false);
+                    highResAlbumBitmap = BitmapFactory.decodeByteArray(albumArtData, 0, albumArtData.length);
+                    lowResAlbumBitmap = Bitmap.createScaledBitmap(highResAlbumBitmap, 128, 128, false);
                 }
 
                 // Create song model and add to static array
-                Song song = new Song(title, artist, album, length, filePath, albumBitmap);
+                Song song = new Song(titleString, artistString, albumString, length, filePath, lowResAlbumBitmap);
                 Song.songArrayList.add(song);
-                //Log.i(TAG, "Current songArrayList size - " + Song.songArrayList.size());
+
+                if (Album.albumArrayList.size() == 0) {
+                    Album albumItem = new Album(albumString, artistString, highResAlbumBitmap);
+                    Album.albumArrayList.add(albumItem);
+                } else {
+                    for (int i = 0; i < Album.albumArrayList.size(); i++) {
+                        if (Album.albumArrayList.get(i).getTitle().equals(albumString))
+                            break;
+                        if(i == Album.albumArrayList.size() - 1) {
+                            Album albumItem = new Album(albumString, artistString, highResAlbumBitmap);
+                            Album.albumArrayList.add(albumItem);
+                        }
+                    }
+                }
             } while (songCursor.moveToNext());
         }
         Log.i(TAG, "Parsing for songs finished with " + Song.songArrayList.size() + " total songs!");

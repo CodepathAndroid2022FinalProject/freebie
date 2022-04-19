@@ -1,16 +1,11 @@
 package com.example.freebie;
 
 import static com.example.freebie.MainActivity.currentlyPlayingSong;
-import static com.example.freebie.MainActivity.mainActivity;
 import static com.example.freebie.MainActivity.mediaPlayer;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.media.MediaMetadataRetriever;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.freebie.models.Song;
 
