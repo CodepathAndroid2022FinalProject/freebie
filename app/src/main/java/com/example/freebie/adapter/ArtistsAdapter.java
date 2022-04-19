@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.freebie.R;
@@ -42,7 +43,7 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ViewHold
         this.artists = artists;
 
         requestOptions = new RequestOptions();
-        requestOptions.transform(new CenterCrop(), new RoundedCorners(128));
+        requestOptions.transform(new CenterCrop(), new CircleCrop());
 
         Resources res = context.getResources();
         placeholderFigure = ResourcesCompat.getDrawable(res, android.R.drawable.ic_menu_gallery, null);
