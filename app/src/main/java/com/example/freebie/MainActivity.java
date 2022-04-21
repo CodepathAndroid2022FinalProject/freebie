@@ -9,6 +9,8 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.freebie.fragments.AlbumsFragment;
 import com.example.freebie.fragments.ArtistsFragment;
@@ -17,6 +19,8 @@ import com.example.freebie.fragments.SettingsFragment;
 import com.example.freebie.models.Song;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.sothree.slidinguppanel.PanelState;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     public AlbumsFragment albumsFragment;
     public ArtistsFragment artistsFragment;
     public SettingsFragment settingsFragment;
+
+    public SlidingUpPanelLayout panelLayout;
+    public Button btnPlay;
 
     private static boolean gettingSongs = false;
 
@@ -52,6 +59,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         MediaPlayerService mediaPlayerService = MediaPlayerService.getInstance(getApplicationContext());
+
+        panelLayout = findViewById(R.id.sliding_layout);
+        btnPlay = findViewById(R.id.btnPlay);
+
+        panelLayout.setPanelState(PanelState.HIDDEN);
+        btnPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(MediaPlayerService.mediaPlayer.isPlaying())
+                    MediaPlayerService.mediaPlayer.pause();
+                else
+                    MediaPlayerService.mediaPlayer.start();
+            }
+        });
 
         // Create each fragment in advance
         homeFragment = new HomeFragment();

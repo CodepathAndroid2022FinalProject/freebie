@@ -7,6 +7,7 @@
     <string name="permission_notice">If you deny the prompt, you will have to enter settings and request the permission manually</string>
     <string name="permission_denied_toast">Enter settings and grant storage access</string>
     <string name="start_app">Let\'s go!</string>
+    <string name="nothing_playing">Nothing is playing</string>
 
     <!-- Navigation bar titles -->
     <string name="home">Home</string>

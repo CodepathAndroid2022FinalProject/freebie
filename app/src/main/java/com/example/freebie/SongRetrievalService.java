@@ -20,8 +20,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Queue;
-
 import okhttp3.Headers;
 
 public class SongRetrievalService {
