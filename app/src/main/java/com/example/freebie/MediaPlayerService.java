@@ -4,6 +4,7 @@ import static com.example.freebie.MainActivity.mainActivity;
 
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ public class MediaPlayerService {
 
     private ImageView ivNowPlayingImage;
     private TextView tvNowPlayingSong;
+    private Button btnPlay;
 
     public MediaPlayerService(Context context) {
         MediaPlayerService.context = context;
@@ -34,12 +36,16 @@ public class MediaPlayerService {
 
                 ivNowPlayingImage = mainActivity.findViewById(R.id.ivNowPlaying);
                 tvNowPlayingSong = mainActivity.findViewById(R.id.tvNowPlayingSong);
+                btnPlay = mainActivity.findViewById(R.id.btnPlay);
 
                 Glide.with(context)
                         .load(R.drawable.ic_image_loading)
                         .into(ivNowPlayingImage);
 
                 tvNowPlayingSong.setText(R.string.nothing_playing);
+                btnPlay.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_play, 0, 0, 0);
+
+                mainActivity.panelLayout.setPanelState(PanelState.HIDDEN);
             }
         });
 
@@ -48,12 +54,14 @@ public class MediaPlayerService {
             public void onPrepared(MediaPlayer mediaPlayer) {
                 ivNowPlayingImage = mainActivity.findViewById(R.id.ivNowPlaying);
                 tvNowPlayingSong = mainActivity.findViewById(R.id.tvNowPlayingSong);
+                btnPlay = mainActivity.findViewById(R.id.btnPlay);
 
                 Glide.with(context)
                         .load(currentlyPlayingSong.getAlbumArt())
                         .into(ivNowPlayingImage);
 
                 tvNowPlayingSong.setText(currentlyPlayingSong.getTitle());
+                btnPlay.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_pause, 0, 0, 0);
 
                 mainActivity.panelLayout.setPanelState(PanelState.COLLAPSED);
             }
