@@ -89,7 +89,7 @@
                 android:layout_width="66dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                app:icon="@drawable/ic_notification_play" />
+                app:icon="@drawable/ic_pause" />
 
         </LinearLayout>
 

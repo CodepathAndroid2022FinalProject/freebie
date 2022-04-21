@@ -67,10 +67,13 @@ public class MainActivity extends AppCompatActivity {
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(MediaPlayerService.mediaPlayer.isPlaying())
+                if(MediaPlayerService.mediaPlayer.isPlaying()) {
                     MediaPlayerService.mediaPlayer.pause();
-                else
+                    btnPlay.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_play, 0, 0, 0);
+                } else {
                     MediaPlayerService.mediaPlayer.start();
+                    btnPlay.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_pause, 0, 0, 0);
+                }
             }
         });
 
