@@ -2,7 +2,6 @@
     <string name="app_name">freebie</string>
 
     <string name="give_storage_permission">Give storage permission</string>
-    <string name="directory_notice">Make sure your music is in the /Music/ directory</string>
     <string name="permission_explanation">We need permission to read your internal storage so you can play your music</string>
     <string name="permission_notice">If you deny the prompt, you will have to enter settings and request the permission manually</string>
     <string name="permission_denied_toast">Enter settings and grant storage access</string>
