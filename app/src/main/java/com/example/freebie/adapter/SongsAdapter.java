@@ -110,7 +110,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
             });
 
             Glide.with(context)
-                    .load(song.getAlbumArt())
+                    .load(song.getAlbum().getLowResAlbumArt())
                     .apply(requestOptions)
                     .placeholder(placeholderFigure)
                     .error(placeholderFigure)

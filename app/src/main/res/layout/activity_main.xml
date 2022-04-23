@@ -80,27 +80,29 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:paddingStart="10dp"
+                android:layout_marginStart="16dp"
                 android:text="@string/nothing_playing"
                 android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPlay"
-                android:layout_width="70dp"
+                android:layout_width="71dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="16dp" />
 
         </LinearLayout>
 
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/ivNowPlaying"
-                android:layout_width="0dp"
-                android:layout_height="96dp"
-                android:layout_weight="1"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="24dp"
+                android:layout_gravity="center_horizontal"/>
 
         </LinearLayout>
 

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.example.freebie.models.Song;
 import com.sothree.slidinguppanel.PanelState;
 
@@ -57,7 +58,8 @@ public class MediaPlayerService {
                 btnPlay = mainActivity.findViewById(R.id.btnPlay);
 
                 Glide.with(context)
-                        .load(currentlyPlayingSong.getAlbumArt())
+                        .load(currentlyPlayingSong.getAlbum().getHighResAlbumArt())
+                        .transform(new RoundedCorners(32))
                         .into(ivNowPlayingImage);
 
                 tvNowPlayingSong.setText(currentlyPlayingSong.getTitle());
